@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace>
+    <project>
+        <path>$WS_DIR$\CA53\CA53.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\CA53_BOOT\CA53_BOOT.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\CR5_0\CR5_0.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\CR5_1\CR5_1.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\FSBL\FSBL.ewp</path>
+    </project>
+    <batchBuild>
+        <batchDefinition>
+            <name>Debug</name>
+            <member>
+                <project>CA53</project>
+                <configuration>Debug</configuration>
+            </member>
+            <member>
+                <project>CA53_BOOT</project>
+                <configuration>Debug</configuration>
+            </member>
+            <member>
+                <project>CR5_0</project>
+                <configuration>Debug</configuration>
+            </member>
+            <member>
+                <project>CR5_1</project>
+                <configuration>Debug</configuration>
+            </member>
+            <member>
+                <project>FSBL</project>
+                <configuration>Debug</configuration>
+            </member>
+        </batchDefinition>
+    </batchBuild>
+</workspace>

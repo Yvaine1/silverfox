@@ -1,0 +1,465 @@
+
+/**************************************************************/
+
+U32 CurrentCPU = CORTEX_A53; //CORTEX_A53, CORTEX_R5
+U32 CoreId = 0; //0, 1, 2, 3
+
+/**************************************************************/
+
+__constant U32 _APB_ADDR_DBGREGS_A53_DBG_0	= 0x80410000;
+__constant U32 _APB_ADDR_DBGREGS_A53_CTI_0	= 0x80420000;
+__constant U32 _APB_ADDR_DBGREGS_A53_PMU_0	= 0x80430000;
+__constant U32 _APB_ADDR_DBGREGS_A53_DBG_1	= 0x80510000;
+__constant U32 _APB_ADDR_DBGREGS_A53_CTI_1	= 0x80520000;
+__constant U32 _APB_ADDR_DBGREGS_A53_PMU_1	= 0x80530000;
+__constant U32 _APB_ADDR_DBGREGS_A53_DBG_2	= 0x80610000;
+__constant U32 _APB_ADDR_DBGREGS_A53_CTI_2	= 0x80620000;
+__constant U32 _APB_ADDR_DBGREGS_A53_PMU_2	= 0x80630000;
+__constant U32 _APB_ADDR_DBGREGS_A53_DBG_3	= 0x80710000;
+__constant U32 _APB_ADDR_DBGREGS_A53_CTI_3	= 0x80720000;
+__constant U32 _APB_ADDR_DBGREGS_A53_PMU_3	= 0x80730000;
+
+__constant U32 _APB_ADDR_DBGREGS_R5_DBG_0	= 0x803F0000;
+__constant U32 _APB_ADDR_DBGREGS_R5_CTI_0	= 0x803F8000;
+__constant U32 _APB_ADDR_DBGREGS_R5_DBG_1	= 0x803F2000;
+__constant U32 _APB_ADDR_DBGREGS_R5_CTI_1	= 0x803F9000;
+
+__constant U32 _APB_ADDR_DBGREGS_PMU_DBG_0	= 0x80210000;
+
+__constant U32 _CRF_APB_APU_RESET       = 0xFD1A0104;
+__constant U32 _APU_RESET_CORE0         = 0x1;
+__constant U32 _APU_RESET_CORE1         = 0x2;
+__constant U32 _APU_RESET_CORE2         = 0x4;
+__constant U32 _APU_RESET_CORE3         = 0x8;
+__constant U32 _APU_RESET_L2            = 0x100;
+__constant U32 _APU_POR_CORE0           = 0x400;
+__constant U32 _APU_POR_CORE1           = 0x800;
+__constant U32 _APU_POR_CORE2           = 0x1000;
+__constant U32 _APU_POR_CORE3           = 0x2000;
+
+__constant U32 _CRL_APB_RPU_RESET       = 0xFF5E023C;
+__constant U32 _RPU_RESET_CORE0         = 0x1;
+__constant U32 _RPU_RESET_CORE1         = 0x2;
+__constant U32 _RPU_AMBA_RESET          = 0x4;
+__constant U32 _RPU_PGE_RESET           = 0x10;
+
+/**************************************************************/
+void SelectCore(U32 id)
+{
+    CoreId = id;
+}
+
+int HwReset(void)
+{
+    JLINK_SYS_Report("Hardware reset using RESET Pin");
+
+    JLINK_TIF_ActivateTargetReset();
+    SYS_Sleep(10);
+    JLINK_TIF_ReleaseTargetReset();
+    
+    return 0;
+}
+
+/**************************************************************/
+
+int IdentifyTarget(void)
+{
+    int ret;
+    U32 ActTIF;
+    U32 TAPId, TAPMask, IRLen, IRPrint, IRPrintMask;
+    
+    JLINK_SYS_Report("Identify Target Device...");
+    
+    JLINK_SelectTIF(JLINK_TIF_JTAG);
+    
+    ActTIF = JLINK_ActiveTIF;
+    if((ActTIF == JLINK_TIF_JTAG) || (ActTIF == JLINK_TIF_CJTAG))
+    {
+        JLINK_SYS_Report("JTAG interface selected.");
+        ret = JLINK_JTAG_Identify();
+        if(ret < 0) 
+        {
+            JLINK_SYS_Report("ERROR: Scanning JTAG chain failed.");
+            return -1;
+        }
+        JLINK_SYS_Report("JTAG chain Identified. Connecting to DAP TAP...");
+    
+        TAPId = 0x0B000477;
+        TAPMask = 0x0F000FFF;
+        IRLen = 4;
+        IRPrint = 0x1;
+        IRPrintMask = 0xF;
+        ret = JLINK_JTAG_FindSelectTAP(TAPId, TAPMask, IRLen, IRPrint, IRPrintMask);
+        if(ret < 0)
+        {
+            JLINK_SYS_Report("Could not find DAP TAP to use.");
+            return -1;
+        }
+        JLINK_SYS_Report("Successfully connect to DAP TAP.");
+    }
+    else
+    {
+        JLINK_SYS_Report("SWD interface is not supported.");
+        return -1;
+    }
+    
+    return ret;
+}
+
+/**************************************************************/
+
+int InitDAP(void)
+{
+    U32 var;
+    int ret, time;
+    
+    //clear stickyerr flag and power up DAP
+    var = 0x50000000;
+    if(JLINK_ActiveTIF == JLINK_TIF_JTAG)
+    {
+        var |= 0x20;
+    }
+    else 
+    {
+        JLINK_CORESIGHT_WriteDP(JLINK_CORESIGHT_DP_REG_ABORT, 0x1E);
+    }
+    JLINK_CORESIGHT_WriteDP(JLINK_CORESIGHT_DP_REG_CTRL_STAT, var);
+    
+    //wait for DAP power up to complete
+    ret = -1;
+    time = JLINK_GetTime() + 500;
+    do
+    {
+        ret = JLINK_CORESIGHT_ReadDP(JLINK_CORESIGHT_DP_REG_CTRL_STAT);
+        if(ret == -1)
+        {
+            JLINK_SYS_Report("ERROR: Failed to get DP CTRL/STAT.");
+            return -1;
+        }
+        var = ret;
+        if((var & 0xf0000000) == 0xf0000000)
+        {
+            ret = 0;
+            break;
+        }
+        if((time - JLINK_GetTime()) <= 0)
+        {
+            JLINK_SYS_Report("ERROR: DAP powup timeout.");
+            break;
+        }
+    } while(1);
+
+    var = JLINK_CORESIGHT_ReadDP(JLINK_CORESIGHT_DP_REG_CTRL_STAT);
+    JLINK_SYS_Report1("DP CTRL/STAT is ", var);
+        
+    return 0;
+}
+
+void select_apb_ap(void)
+{
+    JLINK_SYS_Report("Select AP[1]: APB-AP");
+    JLINK_CORESIGHT_WriteDP(JLINK_CORESIGHT_DP_REG_SELECT, 0x1000000);
+}
+
+void select_axi_ap(void)
+{
+    JLINK_SYS_Report("Select AP[0]: AXI-AP");
+    JLINK_CORESIGHT_WriteDP(JLINK_CORESIGHT_DP_REG_SELECT, 0x0000000);
+}
+
+/**************************************************************/
+
+void select_apu_core0(void)
+{
+    JLINK_SYS_Report("Select APU Core0");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_A53_DBG_0;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x80420000");    
+}
+
+void apu_halt_core0(void)
+{
+    U32 EDECR_addr, EDECR_val;
+    
+    EDECR_addr = _APB_ADDR_DBGREGS_A53_DBG_0 + 0x24;
+    EDECR_val = 0x2;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, EDECR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, EDECR_val);
+
+    EDECR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("EDECR is ", EDECR_val);
+}
+
+void apu_release_core0()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release APU Core0 reset.");
+
+    RST_addr = _CRF_APB_APU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_APU_RESET_CORE0 | _APU_RESET_L2 | _APU_POR_CORE0);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+void select_apu_core1(void)
+{
+    JLINK_SYS_Report("Select APU Core1");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_A53_DBG_1;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x80520000");    
+}
+
+void apu_halt_core1(void)
+{
+    U32 EDECR_addr, EDECR_val;
+    
+    EDECR_addr = _APB_ADDR_DBGREGS_A53_DBG_1 + 0x24;
+    EDECR_val = 0x2;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, EDECR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, EDECR_val);
+
+    EDECR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("EDECR is ", EDECR_val);
+}
+
+void apu_release_core1()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release APU Core1 reset.");
+
+    RST_addr = _CRF_APB_APU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_APU_RESET_CORE1 | _APU_RESET_L2 | _APU_POR_CORE1);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+void select_apu_core2(void)
+{
+    JLINK_SYS_Report("Select APU Core2");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_A53_DBG_2;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x80620000");    
+}
+
+void apu_halt_core2(void)
+{
+    U32 EDECR_addr, EDECR_val;
+    
+    EDECR_addr = _APB_ADDR_DBGREGS_A53_DBG_2 + 0x24;
+    EDECR_val = 0x2;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, EDECR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, EDECR_val);
+
+    EDECR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("EDECR is ", EDECR_val);
+}
+
+void apu_release_core2()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release APU Core2 reset.");
+
+    RST_addr = _CRF_APB_APU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_APU_RESET_CORE2 | _APU_RESET_L2 | _APU_POR_CORE2);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+void select_apu_core3(void)
+{
+    JLINK_SYS_Report("Select APU Core3");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_A53_DBG_3;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x80720000");    
+}
+
+void apu_halt_core3(void)
+{
+    U32 EDECR_addr, EDECR_val;
+    
+    EDECR_addr = _APB_ADDR_DBGREGS_A53_DBG_3 + 0x24;
+    EDECR_val = 0x2;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, EDECR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, EDECR_val);
+
+    EDECR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("EDECR is ", EDECR_val);
+}
+
+void apu_release_core3()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release APU Core3 reset.");
+
+    RST_addr = _CRF_APB_APU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_APU_RESET_CORE3 | _APU_RESET_L2 | _APU_POR_CORE3);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+/**************************************************************/
+
+void select_rpu_core0(void)
+{
+    JLINK_SYS_Report("Select RPU Core0");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_R5_DBG_0;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x803F8000");    
+}
+
+void rpu_halt_core0(void)
+{
+    U32 DSCR_addr, DSCR_val;
+    
+    DSCR_addr = _APB_ADDR_DBGREGS_R5_DBG_0 + 0x90;
+    DSCR_val = 0x1;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, DSCR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, DSCR_val);
+
+    DSCR_addr = _APB_ADDR_DBGREGS_R5_DBG_0 + 0x88;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, DSCR_addr);
+    DSCR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("DSCRext is ", DSCR_val);
+}
+
+void rpu_release_core0()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release RPU Core0 reset.");
+
+    RST_addr = _CRL_APB_RPU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_RPU_RESET_CORE0 | _RPU_AMBA_RESET | _RPU_PGE_RESET);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+void select_rpu_core1(void)
+{
+    JLINK_SYS_Report("Select RPU Core1");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_R5_DBG_1;
+    JLINK_ExecCommand("CORESIGHT_SetCSCTICoreBaseAddr=0x803F9000");    
+}
+
+void rpu_halt_core1(void)
+{
+    U32 DSCR_addr, DSCR_val;
+    
+    DSCR_addr = _APB_ADDR_DBGREGS_R5_DBG_1 + 0x90;
+    DSCR_val = 0x1;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, DSCR_addr);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, DSCR_val);
+
+    DSCR_addr = _APB_ADDR_DBGREGS_R5_DBG_1 + 0x88;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, DSCR_addr);
+    DSCR_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    JLINK_SYS_Report1("DSCRext is ", DSCR_val);
+}
+
+void rpu_release_core0()
+{
+    U32 RST_addr, RST_val;
+    
+    JLINK_SYS_Report("Release RPU Core1 reset.");
+
+    RST_addr = _CRL_APB_RPU_RESET;
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, RST_addr);
+    RST_val = JLINK_CORESIGHT_ReadAP(JLINK_CORESIGHT_AP_REG_DATA);
+    RST_val &= ~(_RPU_RESET_CORE1 | _RPU_AMBA_RESET | _RPU_PGE_RESET);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, RST_val);
+}
+
+void select_pmu(void)
+{
+    JLINK_SYS_Report("Select PMU");
+
+    CORESIGHT_CoreBaseAddr = _APB_ADDR_DBGREGS_PMU_DBG_0;   
+}
+
+/**************************************************************/
+
+void loop_code_high(void)
+{
+    U32 var;
+
+    JLINK_SYS_Report("Set loop code at 0xFFFF0000.");
+
+    //set 0xFFFF0000 = 0xEA000000
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, 0xFFFF0000);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, 0xEA000000);
+    //set 0xFFFF0004 = 0x14000000
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, 0xFFFF0004);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, 0x14000000);
+    //set 0xFFFF0008 = 0xEAFFFFFE
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_ADDR, 0xFFFF0008);
+    JLINK_CORESIGHT_WriteAP(JLINK_CORESIGHT_AP_REG_DATA, 0xEAFFFFFE);
+}
+
+/****************************************************************/
+
+int ConfigTargetSettings()
+{
+    JLINK_CORESIGHT_AddAP(0, CORESIGHT_AXI_AP);
+    JLINK_CORESIGHT_AddAP(1, CORESIGHT_APB_AP);
+    CORESIGHT_IndexAPBAPToUse = 1;
+
+    return 0;
+}
+
+int InitTarget()
+{
+    CPU = CurrentCPU;
+    JLINK_SYS_Report1("CPU is ", CurrentCPU);
+
+    if(CurrentCPU == CORTEX_A53)
+    {
+        if(CoreId == 0) 
+        {
+            select_apu_core0();
+        }
+        else if(CoreId == 1) 
+        {
+            select_apu_core1();
+        }
+        else if(CoreId == 2) 
+        {
+            select_apu_core2();
+        }
+        else if(CoreId == 3) 
+        {
+            select_apu_core3();
+        }
+    }
+    else if(CurrentCPU == CORTEX_R5) 
+    {
+        if(CoreId == 0) 
+        {
+            select_rpu_core0();
+        }
+        else if(CoreId == 1) 
+        {
+            select_rpu_core1();
+        }
+        else if(CoreId == 2) 
+        {
+            select_pmu();
+        }
+    }
+
+    return 0;
+}
+
+int ResetTarget()
+{    
+    return 0;
+}

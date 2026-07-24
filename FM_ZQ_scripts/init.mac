@@ -1,0 +1,361 @@
+
+__var init_mac_loaded;
+
+/****************************************************************************/
+/**************************
+* #define DP_REG_CTRL_STAT 0x4;
+* #define AP_REG_SELECT 0x8;
+*
+* #define AP_REG_ADDR 0x4;
+* #define AP_REG_DATA 0xc;
+***************************/
+dap_write(dst, value)
+{
+    __writeAPReg(dst, 0x4);
+    __writeAPReg(value, 0xc);
+}
+
+dap_read(src)
+{
+    __var value;
+
+    __writeAPReg(src, 0x4);
+    value = __readAPReg(0xc);
+
+    return value;
+}
+
+/****************************************************************************/
+
+init_dap()
+{
+    __var val;
+    
+    if(__driverType("ijet")) {  
+        val = __probeCmd("dap.RDPr 0x4");
+        if(val & 0x20) {
+            __probeCmd("dap.RDPw 0x4", val | 0x20);
+        }
+        val = __probeCmd("dap.RDPr 0x4");
+        __message "DP CTRL/STAT is 0x", val:%x;
+    }
+    else if(__driverType("jlink")) {
+        __jlinkExecMacro("InitDAP");
+    }
+}
+
+select_apb_ap()
+{
+    __var val;
+        
+    //select AP[1]:APB-AP
+    if(__driverType("ijet")) { 
+        __message "Select AP[1]: APB-AP";
+        __probeCmd("dap.RDPw 0x8 0x1000000");
+    }
+    else if(__driverType("jlink")) {
+        __jlinkExecMacro("select_apb_ap");
+    }
+}
+
+select_axi_ap()
+{
+    __var val;
+    
+    //select AP[0]:AXI-AP Bank0
+    if(__driverType("ijet")) { 
+        __message "Select AP[0]: AXI-AP";
+        __probeCmd("dap.RDPw 0x8 0x00000000");
+    }
+    else if(__driverType("jlink")) {
+        __jlinkExecMacro("select_axi_ap");
+    }
+}
+
+/****************************************************************************/
+
+apu_halt(core_mask)
+{
+    __var val;
+
+    if((core_mask & 0xf) == 0){
+        __message "Wrong core mask configured. 0x1 stand for core0, 0x2 stand for core1...";
+    }  
+    
+    //set apu halt after reset
+    if(core_mask & 0x1) {
+        dap_write(0x80410024, 0x00000002);
+
+        val = dap_read(0x80410024);
+        __message "EDECR at [0x80410024] is 0x", val:%x;
+    }
+    if(core_mask & 0x2) {
+        dap_write(0x80510024, 0x00000002);
+
+        val = dap_read(0x80510024);
+        __message "EDECR at [0x80510024] is 0x", val:%x;
+    }
+    if(core_mask & 0x4) {
+        dap_write(0x80610024, 0x00000002);
+
+        val = dap_read(0x80610024);
+        __message "EDECR at [0x80610024] is 0x", val:%x;
+    }
+    if(core_mask & 0x8) {
+        dap_write(0x80710024, 0x00000002);
+
+        val = dap_read(0x80710024);
+        __message "EDECR at [0x80710024] is 0x", val:%x;
+    }
+}
+
+apu_init(core_mask)
+{
+    __var val;
+    
+    if((core_mask & 0xf) == 0){
+        __message "Wrong core mask configured. 0x1 stand for core0, 0x2 stand for core1...";
+    }  
+    
+    //release apu reset
+    val = dap_read(0xfd1a0104);
+    __message "value at [0xfd1a0104] is 0x", val:%x; 
+
+    val &= ~0x100;
+    if(core_mask & 0x1) {
+        __message "Release APU Core0 reset.";
+        val &= ~0x401;
+    }
+    if(core_mask & 0x2) {
+        __message "Release APU Core1 reset.";
+        val &= ~0x802;
+    }
+    if(core_mask & 0x4) {
+        __message "Release APU Core2 reset.";
+        val &= ~0x1004;
+    }
+    if(core_mask & 0x8) {
+        __message "Release APU Core3 reset.";
+        val &= ~0x2008;
+    }
+    dap_write(0xfd1a0104, val);
+
+    val = dap_read(0xfd1a0104);
+    __message "value at [0xfd1a0104] is 0x", val:%x; 
+}
+
+apu_brdc()
+{
+    __var val;
+    
+    __message "unlock lpd slcr.";
+    //set 0xFF410000 = 0x0
+    __probeCmd("dap.w 0xFF410000 0x0 [0]");
+    val = __probeCmd("dap.r 0xFF410000 [0]");
+    __message "value at [0xFF410000] is 0x", val:%x;
+    
+    val = __probeCmd("dap.r 0xFF41A040 [0]");
+    __message "value at [0xFF41A040] is 0x", val:%x;
+    
+    __message "set up brdc reg before releasing APU reset.";
+    //set 0xFF41A040 = 0xb
+    __probeCmd("dap.w 0xFF41A040 0xb [0]");
+    val = __probeCmd("dap.r 0xFF41A040 [0]");
+    __message "value at [0xFF41A040] is 0x", val:%x;
+    
+        __message "set APU por reset.";
+    //set 0xfd1a0104 = 0x40f
+    __probeCmd("dap.w 0xfd1a0104 0x40f [0]");
+    val = __probeCmd("dap.r 0xfd1a0104 [0]");
+    __message "value at [0xfd1a0104] is 0x", val:%x;
+    
+       __message "release APU por reset.";
+    //set 0xfd1a0104 = 0xf
+    __probeCmd("dap.w 0xfd1a0104 0xf [0]");
+    val = __probeCmd("dap.r 0xfd1a0104 [0]");
+    __message "value at [0xfd1a0104] is 0x", val:%x;
+}
+
+/****************************************************************************/
+
+rpu_halt(core_mask)
+{
+    __var val;
+
+    if((core_mask & 0x7) == 0){
+        __message "Wrong core mask configured. 0x1 stand for core0, 0x2 stand for core1, 0x4 stand for lock-step.";
+    }  
+    
+    if((core_mask & 0x1) || (core_mask & 0x4)) {
+         dap_write(0x803F0090, 0x00000001);
+
+        val = dap_read(0x803F0088);
+        __message "DSCRext at [0x803F088] is 0x", val:%x;
+    }
+    if(core_mask & 0x2) { 
+        dap_write(0x803F2090, 0x00000001);
+
+        val = dap_read(0x803F2088);
+        __message "DSCRext at [0x803F2088] is 0x", val:%x;
+    }
+}
+
+rpu_init(core_mask)
+{
+    __var val;
+
+    if((core_mask & 0x7) == 0){
+        __message "Wrong core mask configured. 0x1 stand for core0, 0x2 stand for core1, 0x4 stand for lock-step.";
+    }  
+    
+    //check rpu reset
+    val = dap_read(0xff5e023c);
+    __message "value at [0xff5e023c] is 0x", val:%x;  
+    //change lock-step/split mode & vector during reset
+    if((val & 0x3) == 0x3) {
+        __message "unlock lpd_slcr";
+        dap_write(0xff410000, 0x0);
+        
+        //assert slreset
+        val = dap_read(0xff41f080);
+        val &= ~0x40;
+        dap_write(0xff41f080, val);
+        __message "value at [0xff41f080] is 0x", val:%x;
+        
+        //change split/lock-step mode 0x8(split) / 0x10(lock-step)
+        val = dap_read(0xff9a0000);
+        val &= ~0x58;
+        if(core_mask & 0x4) {
+            __message "set RPU to lock-step mode.";
+            val |= 0x50;
+        }
+        else if(core_mask & 0x3) {
+            __message "set RPU to split mode.";
+            val |= 0x8;
+        }
+        dap_write(0xff9a0000, val);
+        __message "value at [0xff9a0000] is 0x", val:%x;
+        
+        //release slreset
+        val = dap_read(0xff41f080);
+        val |= 0x40;
+        dap_write(0xff41f080, val);
+        __message "value at [0xff41f080] is 0x", val:%x;
+        
+        __message "lock lpd_slcr";
+        dap_write(0xff410000, 0x1);
+
+        /*
+        //change vector
+        if((core_mask & 0x1) || (core_mask & 0x4)) {
+            val = dap_read(0xff9a0100");
+            //val |= 0x4;
+            val &= ~0x4;
+            dap_write(0xff9a0100, val);
+        }
+        if(core_mask & 0x2) {
+            val = dap_read(0xff9a0200);
+            //val |= 0x4;
+            val &= ~0x4;
+            dap_write(0xff9a0200, val);
+        }*/
+    }
+    
+    //release rpu reset
+    __message "release RPU reset.";
+    val = dap_read(0xff5e023c);
+    if((core_mask & 0x1) || (core_mask & 0x4)) {
+        val &= ~0x1;
+    }
+    if(core_mask & 0x2) {
+        val &= ~0x2;
+    }
+    dap_write(0xff5e023c, val);
+    val = dap_read(0xff5e023c);
+    __message "value at [0xff5e023c] is 0x", val:%x; 
+
+    //release rpu halt
+    if((core_mask & 0x1) || (core_mask & 0x4)) {
+        val = dap_read(0xff9a0100);
+        val |= 0x1;
+        dap_write(0xff9a0100, val);
+    }
+    if(core_mask & 0x2) {
+        val = dap_read(0xff9a0200);
+        val |= 0x1;
+        dap_write(0xff9a0200, val);
+    }
+    
+}
+
+rpu_copy_vectors()
+{
+    __var i, value;
+    __var src, dst;
+    __var fileHandle;
+    
+    fileHandle =  __openFile("$TARGET_PATH$", "rb");
+    //skip 6 words
+    for(i=0; i<24; i++) {
+        __readFileByte(fileHandle);
+    }
+    //the 7th word in elf is start address
+    for(i=0, value = 0; i<4; i++) {
+        value |= __readFileByte(fileHandle) << (i*8);
+    }
+    __closeFile(fileHandle);
+               
+    src = value;
+    value = SCTLR;
+    __message "SCTLR is 0x", value:%x;
+    if(value & 0x2000)
+        dst = 0xffff0000;
+    else
+        dst = 0x0;
+    
+    __message "vector table is linked at 0x", src:%x, ", copy vector table to 0x", dst:%x;  
+    for(i=0; i<0x40; i+=4) {
+        value = __readMemory32(src, "Memory");
+        __writeMemory32(value, dst, "Memory");
+        src+=4;
+        dst+=4;
+    }
+}
+
+/****************************************************************************/
+
+pmu_init()
+{
+    __var val;
+    
+    __message "release PMU DBGRQ.";
+    //set 0xff5e023c = 0x8000
+    val = dap_read(0xff410300);
+    val &= ~0xf;
+    dap_write(0xff410300, val);
+    __message "value at [0xff410300] is 0x", val:%x;  
+}
+
+pmu_vector_high()
+{
+    __var val;
+    
+    __message "set sctlr.v = 1";
+    val = SCTLR;
+    val |= (0x1 << 13);
+    SCTLR = val;
+    __message "SCTLR=0x",SCTLR:%x;
+}
+
+/****************************************************************************/
+
+ddr_init()
+{
+    __var val;
+    
+    __message "release DDR reset.";
+    __writeMemory32(0x0, 0xfd1a0108, "Memory");
+
+    val = __readMemory32(0xfd1a0108, "Memory");
+    __message "value at [0xfd1a0108] is 0x", val:%x;
+}

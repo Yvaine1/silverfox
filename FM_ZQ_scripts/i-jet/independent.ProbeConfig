@@ -1,0 +1,20 @@
+; MPSOC - DAP(4xCortex-A53 + 2xCortex-R5 + PMU) + PL-TAP
+
+;@@Title@@: Cortex-A53 Sub System
+;@@Init@@: dap.RDPw 0x8 0
+;@@Init@@: dap.RAPw 0x4 0xfd1a0104
+;@@Init@@: dap.RAPw 0xc 0
+;@@Init@@: dap.RAPw 0x4 0xff5e023c
+;@@Init@@: dap.RAPw 0xc 0
+; Emulator TDI 
+
+; Explicitly set the debug components addresses.
+"PMU"   "Cortex-R5:1@0x80210000,CTI:1@0x80218000"
++"R5_0"   "Cortex-R5:1@0x803F0000,CTI:1@0x803F8000,ETM:1@0x803FC000" 
++"R5_1"   "Cortex-R5:1@0x803F2000,CTI:1@0x803F9000,ETM:1@0x803FD000"
++"A53_0"   "Cortex-A53:1@0x80410000,CTI:1@0x80420000,PMU:1@0x80430000"
++"A53_1"   "Cortex-A53:1@0x80510000,CTI:1@0x80520000,PMU:1@0x80530000"
++"A53_2"   "Cortex-A53:1@0x80610000,CTI:1@0x80620000,PMU:1@0x80630000"
++"A53_3"   "Cortex-A53:1@0x80710000,CTI:1@0x80720000,PMU:1@0x80730000"
+
+; End of file 

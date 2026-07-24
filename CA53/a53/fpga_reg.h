@@ -1,0 +1,3 @@
+#define FPGA_TXPOWER_REG       0x1154
+#define FPGA_RXPOWER_REG       0x11c0
+#define FPGA_BASEADDR     0x80000000

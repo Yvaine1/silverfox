@@ -1,0 +1,65 @@
+/*###ICF### Section handled by ICF editor, don't touch! ****/
+/*-Editor annotation file-*/
+/* IcfEditorFile="$TOOLKIT_DIR$\config\ide\IcfEditor\a_v1_0.xml" */
+
+/*-Memory Regions-*/
+define symbol __Region_vector_start__   = 0x09000000;
+define symbol __Region_axisram_start__  = 0xFFFC0000;
+define symbol __Region_axisram_end__    = 0xFFFFFFFF;
+define symbol __Region_ahbsram_start__  = 0xE1FE0000;
+define symbol __Region_ahbsram_end__    = 0xE1FFFFFF;
+define symbol __Region_atcm_vector_start__     = 0x0;
+define symbol __Region_atcm_start__     = 0x0;
+define symbol __Region_atcm_end__       = 0xFFFF;
+define symbol __Region_btcm_start__     = 0x20000;
+define symbol __Region_btcm_end__       = 0x2FFFF;
+define symbol __Region_ddr_start__      = 0x09000000;
+define symbol __Region_ddr_end__        = 0x10FFFFFF;
+
+/*-Sizes-*/
+define symbol __Size_vectors__  = 0x40;
+define symbol __Size_cstack__   = 0x100000;
+define symbol __Size_irqstack__ = 0x100000;
+define symbol __Size_fiqstack__ = 0x200;
+define symbol __Size_svcstack__ = 0x400;
+define symbol __Size_abtstack__ = 0x200;
+define symbol __Size_undstack__ = 0x200;
+
+define symbol __Size_heap__     = 0x40000;
+
+/*-Exports-*/
+export symbol __Region_atcm_start__;
+export symbol __Region_btcm_start__;
+export symbol __Region_vector_start__;
+export symbol __Size_vectors__;
+
+/**** End of ICF editor section. ###ICF###*/
+
+define memory mem with size = 4G;
+define region VEC_region = mem:[from __Region_vector_start__ size __Size_vectors__];
+define region VEC_region_resvd = mem:[from 0x7FFF0000 size 0x40];
+define region AXISRAM_region = mem:[from __Region_axisram_start__ to __Region_axisram_end__] - VEC_region - VEC_region_resvd;
+define region AHBSRAM_region = mem:[from __Region_ahbsram_start__ to __Region_ahbsram_end__];
+define region ATCM_VEC_region = mem:[from __Region_atcm_vector_start__ size __Size_vectors__];
+define region ATCM_region = mem:[from __Region_atcm_start__ to __Region_atcm_end__] - ATCM_VEC_region;
+define region BTCM_region = mem:[from __Region_btcm_start__ to __Region_btcm_end__];
+define region DDR_region = mem:[from __Region_ddr_start__ to __Region_ddr_end__];
+
+define block CSTACK    with alignment = 8, size = __Size_cstack__   { };
+define block IRQ_STACK with alignment = 8, size = __Size_irqstack__ { };
+define block FIQ_STACK with alignment = 8, size = __Size_fiqstack__ { };
+define block SVC_STACK with alignment = 8, size = __Size_svcstack__ { };
+define block ABT_STACK with alignment = 8, size = __Size_abtstack__ { };
+define block UND_STACK with alignment = 8, size = __Size_undstack__ { };
+define block HEAP      with alignment = 8, size = __Size_heap__     { };
+
+initialize by copy with packing=none { readwrite };
+do not initialize  { readonly section .noinit };
+
+/*place in VEC_region { section .vectors };*/
+place in ATCM_VEC_region { section .vectors };
+place in DDR_region { readonly };
+place in DDR_region { readwrite, block IRQ_STACK, block FIQ_STACK, block SVC_STACK, block ABT_STACK, block UND_STACK, block CSTACK, block HEAP };
+place in ATCM_region{ section .fastcode};
+place in BTCM_region{ section .fastdata};
+

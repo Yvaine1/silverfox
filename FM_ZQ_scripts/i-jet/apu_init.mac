@@ -1,0 +1,106 @@
+
+/*********************************************************************
+*
+*       execUserCoreConnect()
+*/
+execUserCoreConnect()
+{
+    __message "------------------------------ execUserCoreConnect ---------------------------------";
+    
+    __var val, core_mask;
+        
+    /******************
+    * core_mask
+    * 0x1 : core0
+    * 0x2 : core1
+    * 0x4 : core2
+    * 0x8 : core3
+    ******************/
+    core_mask = 0x1;
+    
+    if(__driverType("ijet")) {   
+        
+        if(__isMacroSymbolDefined("init_mac_loaded") == 0) {
+            __registerMacroFile("$PROJ_DIR$\\..\\FM_ZQ_scripts\\init.mac");
+        }
+
+        init_dap();
+        
+        select_apb_ap();
+        apu_halt(core_mask);
+    
+        select_axi_ap();  
+        apu_init(core_mask);
+    }
+}
+
+/*********************************************************************
+*
+*       execUserPreReset()
+*/
+execUserPreReset()
+{
+    __message "------------------------------ execUserPreReset ---------------------------------";
+}
+
+/*********************************************************************
+*
+*       execUserReset()
+*/
+execUserReset()
+{
+    __message "------------------------------ execUserReset -------------------------------------";
+}
+
+/*********************************************************************
+*
+*       execUserPreload()
+*/
+execUserPreload()
+{
+    __message "------------------------------ execUserPreload -----------------------------------";
+     
+    __var val;
+    
+    val= SCTLR_EL3;
+    if(val & 0x1005) {
+        __message "Disable SCTLR_EL3.M & SCTLR_EL3.C & SCTLR_EL3.I";
+        val &= ~(0x1005);
+        SCTLR_EL3 = val;
+        __message "SCTLR_EL3=0x",val:%x;
+    }
+    
+    if(__isMacroSymbolDefined("psu_init")) {
+        load_define();
+        psu_init();
+    }
+}
+
+/*********************************************************************
+*
+*       execUserSetup()
+*/
+execUserSetup()
+{
+    __message "------------------------------ execUserSetup -------------------------------------";
+}
+
+/*********************************************************************
+*
+*       execUserFlashInit() : JTAG set initially to 32kHz
+*/
+
+execUserFlashInit()
+{
+    __message "------------------------------ execUserFlashInit ---------------------------------";        
+}
+
+
+/*********************************************************************
+*
+*       execUserFlashExit()
+*/
+execUserFlashExit()
+{
+    __message "------------------------------ execUserFlashExit ---------------------------------";
+}

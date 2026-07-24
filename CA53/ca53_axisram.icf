@@ -1,0 +1,88 @@
+/*###ICF### Section handled by ICF editor, don't touch! ****/
+/*-Editor annotation file-*/
+/* IcfEditorFile="$TOOLKIT_DIR$\config\ide\IcfEditor\a_v1_0.xml" */
+
+/*-Memory Regions-*/
+define symbol __Region_vector_start__   = 0xFFFC0800;
+define symbol __Region_axisram_start__  = 0xFFFC0000;
+define symbol __Region_axisram_end__    = 0xFFFFFFFF;
+define symbol __Region_ddrlow_start__   = 0x000100000;
+define symbol __Region_ddrlow_end__     = 0x03FFFFFFF;
+define symbol __Region_ddrhigh_start__  = 0x800100000;
+define symbol __Region_ddrhigh_end__    = 0x83FFFFFFF;
+
+/*-Sizes-*/
+define symbol __Size_start__              = 0x800;
+define symbol __Size_el1_vectors__        = 0x800;
+define symbol __Size_el2_vectors__        = 0;
+define symbol __Size_el3_vectors__        = 0x800;
+define symbol __Size_vectors__ = __Size_el3_vectors__ + __Size_el2_vectors__ + __Size_el1_vectors__;
+
+define symbol __Size_cstack__             = 0x1000;
+define symbol __Size_heap__               = 0x4000;
+
+/*-Address offset-*/
+define symbol __Address_start__           = __Region_axisram_start__;
+define symbol __Address_el1_vectors__     = __Region_vector_start__;
+define symbol __Address_el2_vectors__     = __Address_el1_vectors__ + __Size_el1_vectors__;
+define symbol __Address_el3_vectors__     = __Address_el2_vectors__ + __Size_el2_vectors__;
+
+/*-Exports-*/
+define exported symbol el1_vectors  = __Address_el1_vectors__;
+define exported symbol el2_vectors  = __Address_el2_vectors__;
+define exported symbol el3_vectors  = __Address_el3_vectors__;
+define exported symbol _freertos_vector_table    = el3_vectors;
+
+/**** End of ICF editor section. ###ICF###*/
+define memory mem with size = 256T;
+define region START_region = mem:[from __Address_start__ size __Size_start__];
+define region VEC_region = mem:[from __Address_el1_vectors__ size __Size_vectors__];
+define region AXISRAM_region = mem:[from __Region_axisram_start__ to __Region_axisram_end__] - VEC_region - START_region;
+define region DDRLOW_region = mem:[from __Region_ddrlow_start__ to __Region_ddrlow_end__] - VEC_region - START_region;
+define region DDRHIGH_region = mem:[from __Region_ddrhigh_start__ to __Region_ddrhigh_end__] - VEC_region- START_region;
+
+define block CSTACK    with alignment = 16, size = __Size_cstack__   { };
+define block HEAP      with alignment = 16, size = __Size_heap__     { };
+
+initialize by copy with packing=none { readwrite };
+do not initialize  { readonly section .noinit, section .FPU_DATA, section .mmu_tbl*};
+
+/*-Vectors-*/
+define symbol freertos_t0sync   = _freertos_vector_table;
+define symbol freertos_t0irq    = _freertos_vector_table + 0x80;
+define symbol freertos_t0fiq    = _freertos_vector_table + 0x100;
+define symbol freertos_t0serr   = _freertos_vector_table + 0x180;
+define symbol freertos_t1sync   = _freertos_vector_table + 0x200;
+define symbol freertos_t1irq    = _freertos_vector_table + 0x280;
+define symbol freertos_t1fiq    = _freertos_vector_table + 0x300;
+define symbol freertos_t1serr   = _freertos_vector_table + 0x380;
+define symbol freertos_t2sync   = _freertos_vector_table + 0x400;
+define symbol freertos_t2irq    = _freertos_vector_table + 0x480;
+define symbol freertos_t2fiq    = _freertos_vector_table + 0x500;
+define symbol freertos_t2serr   = _freertos_vector_table + 0x580;
+define symbol freertos_t3sync   = _freertos_vector_table + 0x600;
+define symbol freertos_t3irq    = _freertos_vector_table + 0x680;
+define symbol freertos_t3fiq    = _freertos_vector_table + 0x700;
+define symbol freertos_t3serr   = _freertos_vector_table + 0x780;
+
+place at address freertos_t0sync        { ro section .freertos_t0sync  };
+place at address freertos_t0irq         { ro section .freertos_t0irq   };
+place at address freertos_t0fiq         { ro section .freertos_t0fiq   };
+place at address freertos_t0serr        { ro section .freertos_t0serr  };
+place at address freertos_t1sync        { ro section .freertos_t1sync  };
+place at address freertos_t1irq         { ro section .freertos_t1irq   };
+place at address freertos_t1fiq         { ro section .freertos_t1fiq   };
+place at address freertos_t1serr        { ro section .freertos_t1serr  };
+place at address freertos_t2sync        { ro section .freertos_t2sync  };
+place at address freertos_t2irq         { ro section .freertos_t2irq   };
+place at address freertos_t2fiq         { ro section .freertos_t2fiq   };
+place at address freertos_t2serr        { ro section .freertos_t2serr  };
+place at address freertos_t3sync        { ro section .freertos_t3sync  };
+place at address freertos_t3irq         { ro section .freertos_t3irq   };
+place at address freertos_t3fiq         { ro section .freertos_t3fiq   };
+place at address freertos_t3serr        { ro section .freertos_t3serr  };
+
+place at address __Address_start__ {section .freertos_start};
+
+place in AXISRAM_region { readonly, section .text, section .mmu_tbl* };
+place in AXISRAM_region { readwrite, section .data, block CSTACK, block HEAP };

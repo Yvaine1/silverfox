@@ -1,0 +1,164 @@
+/*###ICF### Section handled by ICF editor, don't touch! ****/
+/*-Editor annotation file-*/
+/* IcfEditorFile="$TOOLKIT_DIR$\config\ide\IcfEditor\a_v1_0.xml" */
+/*-Memory Regions-*/
+define symbol __ICFEDIT_region_resv_start__ = 0xFFFF0000;
+define symbol __ICFEDIT_region_RAM_start__ = 0xFFFC0000;
+define symbol __ICFEDIT_region_RAM_end__   = 0xFFFFFFFF;
+
+/*-Sizes-*/
+define symbol __ICFEDIT_Reset_address__           = 0x0;
+define symbol __ICFEDIT_size_Reset__              = 0x0;
+
+define symbol __ICFEDIT_el1_vectors_address__     = 0x0;
+define symbol __ICFEDIT_size_el1_vectors__        = 0x800;
+define symbol __ICFEDIT_el2_vectors_address__     = __ICFEDIT_el1_vectors_address__ + __ICFEDIT_size_el1_vectors__;
+define symbol __ICFEDIT_size_el2_vectors__        = 0;
+define symbol __ICFEDIT_el3_vectors_address__     = __ICFEDIT_el1_vectors_address__ + __ICFEDIT_size_el1_vectors__ + __ICFEDIT_size_el2_vectors__;
+define symbol __ICFEDIT_size_el3_vectors__        = 0x800;
+
+define symbol __ICFEDIT_size_cstack__             = 0x1000;
+define symbol __ICFEDIT_size_heap__               = 0x2000;
+
+// The table itself must be aligned on a 2KB-aligned address.
+define symbol __ICFEDIT_vectors_address__         = __ICFEDIT_el3_vectors_address__;
+define symbol __ICFEDIT_size_vectors__ = __ICFEDIT_size_el3_vectors__ + __ICFEDIT_size_el2_vectors__ + __ICFEDIT_size_el1_vectors__;
+
+/*-Exports-*/
+export symbol __ICFEDIT_region_RAM_start__;
+export symbol __ICFEDIT_region_RAM_end__;
+export symbol __ICFEDIT_size_vectors__;
+export symbol __ICFEDIT_size_cstack__;
+export symbol __ICFEDIT_size_heap__;
+
+/**** End of ICF editor section. ###ICF###*/
+
+define memory mem with size = 4G;
+define region RESV_region = mem:[from __ICFEDIT_region_resv_start__ size 0x40];
+define region RESET_region = mem:[from __ICFEDIT_Reset_address__ size __ICFEDIT_size_Reset__];
+define region VEC_region = mem:[from __ICFEDIT_vectors_address__ size __ICFEDIT_size_vectors__];
+define region RAM_region = mem:[from __ICFEDIT_region_RAM_start__+__ICFEDIT_size_Reset__+__ICFEDIT_size_vectors__ to __ICFEDIT_region_RAM_end__] - RESV_region;
+
+define block CSTACK    with alignment = 16, size = __ICFEDIT_size_cstack__   { };
+define block HEAP      with alignment = 16, size = __ICFEDIT_size_heap__     { };
+
+initialize by copy with packing=none { readwrite };  
+do not initialize  { readonly section .noinit, section .FPU_DATA, section .mmu_tbl*};
+
+define exported symbol el1_vectors  = __ICFEDIT_region_RAM_start__ + __ICFEDIT_el1_vectors_address__;
+define symbol c0sync1  = el1_vectors;
+define symbol c0irq1   = el1_vectors + 0x80;
+define symbol c0fiq1   = el1_vectors + 0x100;
+define symbol c0serr1  = el1_vectors + 0x180;
+define symbol cxsync1  = el1_vectors + 0x200;
+define symbol cxirq1   = el1_vectors + 0x280;
+define symbol cxfiq1   = el1_vectors + 0x300;
+define symbol cxserr1  = el1_vectors + 0x380;
+define symbol l64sync1 = el1_vectors + 0x400;
+define symbol l64irq1  = el1_vectors + 0x480;
+define symbol l64fiq1  = el1_vectors + 0x500;
+define symbol l64serr1 = el1_vectors + 0x580;
+define symbol l32sync1 = el1_vectors + 0x600;
+define symbol l32irq1  = el1_vectors + 0x680;
+define symbol l32fiq1  = el1_vectors + 0x700;
+define symbol l32serr1 = el1_vectors + 0x780;
+
+/** EL2 VECTOR **/
+define exported symbol el2_vectors  = __ICFEDIT_region_RAM_start__ + __ICFEDIT_el2_vectors_address__;
+// define symbol c0sync2  = el2_vectors;
+// define symbol c0irq2   = el2_vectors + 0x80;
+// define symbol c0fiq2   = el2_vectors + 0x100;
+// define symbol c0serr2  = el2_vectors + 0x180;
+// define symbol cxsync2  = el2_vectors + 0x200;
+// define symbol cxirq2   = el2_vectors + 0x280;
+// define symbol cxfiq2   = el2_vectors + 0x300;
+// define symbol cxserr2  = el2_vectors + 0x380;
+// define symbol l64sync2 = el2_vectors + 0x400;
+// define symbol l64irq2  = el2_vectors + 0x480;
+// define symbol l64fiq2  = el2_vectors + 0x500;
+// define symbol l64serr2 = el2_vectors + 0x580;
+// define symbol l32sync2 = el2_vectors + 0x600;
+// define symbol l32irq2  = el2_vectors + 0x680;
+// define symbol l32fiq2  = el2_vectors + 0x700;
+// define symbol l32serr2 = el2_vectors + 0x780;
+
+define exported symbol el3_vectors  = __ICFEDIT_region_RAM_start__ + __ICFEDIT_el3_vectors_address__;
+define symbol c0sync3  = el3_vectors;
+define symbol c0irq3   = el3_vectors + 0x80;
+define symbol c0fiq3   = el3_vectors + 0x100;
+define symbol c0serr3  = el3_vectors + 0x180;
+define symbol cxsync3  = el3_vectors + 0x200;
+define symbol cxirq3   = el3_vectors + 0x280;
+define symbol cxfiq3   = el3_vectors + 0x300;
+define symbol cxserr3  = el3_vectors + 0x380;
+define symbol l64sync3 = el3_vectors + 0x400;
+define symbol l64irq3  = el3_vectors + 0x480;
+define symbol l64fiq3  = el3_vectors + 0x500;
+define symbol l64serr3 = el3_vectors + 0x580;
+define symbol l32sync3 = el3_vectors + 0x600;
+define symbol l32irq3  = el3_vectors + 0x680;
+define symbol l32fiq3  = el3_vectors + 0x700;
+define symbol l32serr3 = el3_vectors + 0x780;
+
+// Place default exception code at the exception vectors.
+place at address c0sync1        { ro section .c0sync1  };
+place at address c0irq1         { ro section .c0irq1   };
+place at address c0fiq1         { ro section .c0fiq1   };
+place at address c0serr1        { ro section .c0serr1  };
+place at address cxsync1        { ro section .cxsync1  };
+place at address cxirq1         { ro section .cxirq1   };
+place at address cxfiq1         { ro section .cxfiq1   };
+place at address cxserr1        { ro section .cxserr1  };
+place at address l64sync1       { ro section .l64sync1 };
+place at address l64irq1        { ro section .l64irq1  };
+place at address l64fiq1        { ro section .l64fiq1  };
+place at address l64serr1       { ro section .l64serr1 };
+place at address l32sync1       { ro section .l32sync1 };
+place at address l32irq1        { ro section .l32irq1  };
+place at address l32fiq1        { ro section .l32fiq1  };
+place at address l32serr1       { ro section .l32serr1 };
+
+/** EL2 VECTOR **/
+// place at address c0sync2        { ro section .c0sync2  };
+// place at address c0irq2         { ro section .c0irq2   };
+// place at address c0fiq2         { ro section .c0fiq2   };
+// place at address c0serr2        { ro section .c0serr2  };
+// place at address cxsync2        { ro section .cxsync2  };
+// place at address cxirq2         { ro section .cxirq2   };
+// place at address cxfiq2         { ro section .cxfiq2   };
+// place at address cxserr2        { ro section .cxserr2  };
+// place at address l64sync2       { ro section .l64sync2 };
+// place at address l64irq2        { ro section .l64irq2  };
+// place at address l64fiq2        { ro section .l64fiq2  };
+// place at address l64serr2       { ro section .l64serr2 };
+// place at address l32sync2       { ro section .l32sync2 };
+// place at address l32irq2        { ro section .l32irq2  };
+// place at address l32fiq2        { ro section .l32fiq2  };
+// place at address l32serr2       { ro section .l32serr2 };
+
+place at address c0sync3        { ro section .c0sync3  };
+place at address c0irq3         { ro section .c0irq3   };
+place at address c0fiq3         { ro section .c0fiq3   };
+place at address c0serr3        { ro section .c0serr3  };
+place at address cxsync3        { ro section .cxsync3  };
+place at address cxirq3         { ro section .cxirq3   };
+place at address cxfiq3         { ro section .cxfiq3   };
+place at address cxserr3        { ro section .cxserr3  };
+place at address l64sync3       { ro section .l64sync3 };
+place at address l64irq3        { ro section .l64irq3  };
+place at address l64fiq3        { ro section .l64fiq3  };
+place at address l64serr3       { ro section .l64serr3 };
+place at address l32sync3       { ro section .l32sync3 };
+place at address l32irq3        { ro section .l32irq3  };
+place at address l32fiq3        { ro section .l32fiq3  };
+place at address l32serr3       { ro section .l32serr3 };
+
+place at address __ICFEDIT_region_RAM_start__+__ICFEDIT_Reset_address__ { section .boot };
+
+define block CODE with fixed order { section .mmu_tbl, ro } except { object fmsh_gtr.o, object ddr_init_data.o};
+define block DATA with fixed order { rw } except { object fmsh_gtr.o, object ddr_init_data.o};
+define block CODE_DATA { block CODE, block DATA, block CSTACK, block HEAP};
+
+place in RAM_region { block CODE_DATA };
+place in RAM_region { object fmsh_gtr.o, object ddr_init_data.o};
+

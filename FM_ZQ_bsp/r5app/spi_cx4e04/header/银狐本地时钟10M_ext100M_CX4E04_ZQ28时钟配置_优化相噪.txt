@@ -1,0 +1,240 @@
+WriteSpi1(hUsb, hex2dec('000'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('002'), hex2dec('05'));
+WriteSpi1(hUsb, hex2dec('081'), hex2dec('42'));
+WriteSpi1(hUsb, hex2dec('051'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('06E'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('071'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('072'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('073'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('0C0'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0C1'), hex2dec('80'));
+WriteSpi1(hUsb, hex2dec('0C2'), hex2dec('74'));
+WriteSpi1(hUsb, hex2dec('0C3'), hex2dec('2C'));
+WriteSpi1(hUsb, hex2dec('0C4'), hex2dec('F0'));
+WriteSpi1(hUsb, hex2dec('0C5'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('0C6'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('0DD'), hex2dec('33'));
+WriteSpi1(hUsb, hex2dec('0DE'), hex2dec('33'));
+WriteSpi1(hUsb, hex2dec('0C8'), hex2dec('13'));
+WriteSpi1(hUsb, hex2dec('0CA'), hex2dec('CC'));
+WriteSpi1(hUsb, hex2dec('0DC'), hex2dec('11'));
+WriteSpi1(hUsb, hex2dec('0DF'), hex2dec('32'));
+WriteSpi1(hUsb, hex2dec('0CC'), hex2dec('A0'));
+WriteSpi1(hUsb, hex2dec('0CD'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('0DA'), hex2dec('31'));
+WriteSpi1(hUsb, hex2dec('0CF'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0D0'), hex2dec('4D'));
+WriteSpi1(hUsb, hex2dec('0D1'), hex2dec('D2'));
+WriteSpi1(hUsb, hex2dec('0D2'), hex2dec('F1'));
+WriteSpi1(hUsb, hex2dec('0CE'), hex2dec('33'));
+WriteSpi1(hUsb, hex2dec('0D9'), hex2dec('04'));
+WriteSpi1(hUsb, hex2dec('06D'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('003'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('004'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('005'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('006'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('007'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('008'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('009'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00A'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00B'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00C'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00D'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00E'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('00F'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('010'), hex2dec('7F'));
+WriteSpi1(hUsb, hex2dec('011'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('012'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('013'), hex2dec('02'));
+WriteSpi1(hUsb, hex2dec('014'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('015'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('016'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('017'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('018'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('019'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('01A'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('01B'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('01C'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('01D'), hex2dec('02'));
+WriteSpi1(hUsb, hex2dec('01E'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('01F'), hex2dec('02'));
+WriteSpi1(hUsb, hex2dec('020'), hex2dec('7F'));
+WriteSpi1(hUsb, hex2dec('021'), hex2dec('7F'));
+WriteSpi1(hUsb, hex2dec('022'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('023'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('024'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('025'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('026'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('027'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('028'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('029'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02A'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02B'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02C'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02D'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02E'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('02F'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('030'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('031'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('032'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('033'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('034'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('035'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('036'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('037'), hex2dec('02'));
+WriteSpi1(hUsb, hex2dec('038'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('039'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('03A'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('03B'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('03C'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('03D'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('03E'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('03F'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('040'), hex2dec('04'));
+WriteSpi1(hUsb, hex2dec('041'), hex2dec('04'));
+WriteSpi1(hUsb, hex2dec('042'), hex2dec('5C'));
+WriteSpi1(hUsb, hex2dec('043'), hex2dec('23'));
+WriteSpi1(hUsb, hex2dec('047'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('048'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('049'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('04A'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('04B'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('04C'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('04D'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('04E'), hex2dec('FF'));
+WriteSpi1(hUsb, hex2dec('000'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('0C1'), hex2dec('80'));
+WriteSpi1(hUsb, hex2dec('0E0'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0E1'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0E2'), hex2dec('70'));
+WriteSpi1(hUsb, hex2dec('0E3'), hex2dec('40'));
+WriteSpi1(hUsb, hex2dec('0E4'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0E5'), hex2dec('10'));
+WriteSpi1(hUsb, hex2dec('0E6'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('0E7'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('05F'), hex2dec('11'));
+WriteSpi1(hUsb, hex2dec('060'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('061'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('066'), hex2dec('08'));
+WriteSpi1(hUsb, hex2dec('062'), hex2dec('20'));
+WriteSpi1(hUsb, hex2dec('069'), hex2dec('10'));
+pause(0.01)
+WriteSpi1(hUsb, hex2dec('069'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('050'), hex2dec('3F'));
+WriteSpi1(hUsb, hex2dec('051'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('052'), hex2dec('E4'));
+WriteSpi1(hUsb, hex2dec('053'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('054'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('055'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('056'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('057'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('058'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('059'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('05A'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('05B'), hex2dec('02'));
+WriteSpi1(hUsb, hex2dec('05C'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('05D'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('05E'), hex2dec('01'));
+WriteSpi1(hUsb, hex2dec('064'), hex2dec('13'));
+WriteSpi1(hUsb, hex2dec('063'), hex2dec('00'));
+WriteSpi1(hUsb, hex2dec('063'), hex2dec('11'));
+WriteSpi1(hUsb, hex2dec('0C7'), hex2dec('00'));
+pause(0.1)
+WriteSpi1(hUsb, hex2dec('0C7'), hex2dec('17'));
+
+
+%%-------------------------------------------%%
+WriteSpi1(hUsb, hex2dec('080'), hex2dec('00')); % ddspll pd
+WriteSpi1(hUsb, hex2dec('081'), hex2dec('42')); % 漏电
+WriteSpi1(hUsb, hex2dec('000'), hex2dec('12'));
+WriteSpi1(hUsb, hex2dec('002'), hex2dec('55')); %%%% BG PD
+WriteSpi1(hUsb, hex2dec('002'), hex2dec('15')); %%%% BG PD
+
+WriteSpi1(hUsb, hex2dec('051'), hex2dec('12')); %%%% 参考时钟接收电路 PD
+WriteSpi1(hUsb, hex2dec('06D'), hex2dec('00')); %%%% 晶振接收电路 PD
+WriteSpi1(hUsb, hex2dec('0B4'), hex2dec('53'));%DDSPLL AFC复位
+WriteSpi1(hUsb, hex2dec('080'), hex2dec('00'));%DDSPLL  DDSPLL LDO上电
+WriteSpi1(hUsb, hex2dec('097'), hex2dec('10'));% dac clk 1.28G  2.56G
+WriteSpi1(hUsb, hex2dec('0AF'), hex2dec('02'));%ps计数器复位
+WriteSpi1(hUsb, hex2dec('0B1'), hex2dec('17'));%P计数值  05
+WriteSpi1(hUsb, hex2dec('0B0'), hex2dec('24'));%S计数值  25
+WriteSpi1(hUsb, hex2dec('0B3'), hex2dec('0F'));%DDSPLL cp cur
+WriteSpi1(hUsb, hex2dec('0B4'), hex2dec('53'));%DDSPLL cap
+WriteSpi1(hUsb, hex2dec('0AD'), hex2dec('20'));%
+WriteSpi1(hUsb, hex2dec('0AF'), hex2dec('12'));%ps计数器释放
+WriteSpi1(hUsb, hex2dec('0AE'), hex2dec('C7'));% r1电阻 PFD死区时间
+WriteSpi1(hUsb, hex2dec('0B2'), hex2dec('17'));%LD CAP
+WriteSpi1(hUsb, hex2dec('0B7'), hex2dec('30'));%DDSPLL AFC复位
+pause(0.1)
+WriteSpi1(hUsb, hex2dec('0B7'), hex2dec('33'));%DDSPLL AFC使能
+dec2hex(ReadSpi1(hUsb, hex2dec('0B8')))  %AFC和锁定指示 正确03
+dec2hex(ReadSpi1(hUsb, hex2dec('0B9')))  %VCO子带
+pause(0.1)
+%% nco frequency config
+WriteSpi1(hUsb, hex2dec('08D'), hex2dec('80'));%rstn
+% f0=61.44;%Mhz
+% fs=600;%MHz
+% f0_floor=floor(f0/fs*2^36);
+% frac=mod(f0/fs*2^36,f0_floor);
+% f0_deno=fs;
+% f0_mole=round(frac*f0_deno);
+% f_hex=dec2hex(f0_floor,9);
+% f0_deno_hex=dec2hex(f0_deno,3);
+% f0_mole_hex=dec2hex(f0_mole,3);
+WriteSpi1(hUsb, hex2dec('088'), hex2dec('01'));%nco频率控制字
+WriteSpi1(hUsb, hex2dec('089'), hex2dec('A3'));%nco频率控制字
+WriteSpi1(hUsb, hex2dec('08A'), hex2dec('6E'));%nco频率控制字
+WriteSpi1(hUsb, hex2dec('08B'), hex2dec('2E'));%nco频率控制字
+WriteSpi1(hUsb, hex2dec('08C'), hex2dec('B1'));%nco频率控制字
+WriteSpi1(hUsb, hex2dec('084'), hex2dec('32'));%nco deno
+WriteSpi1(hUsb, hex2dec('085'), hex2dec('58'));%nco deno
+WriteSpi1(hUsb, hex2dec('086'), hex2dec('01'));%nco mole
+WriteSpi1(hUsb, hex2dec('087'), hex2dec('CC'));%nco mole
+WriteSpi1(hUsb, hex2dec('083'), hex2dec('30'));%prbs
+%% rstn
+WriteSpi1(hUsb, hex2dec('08D'), hex2dec('FF'));%rstn
+%% DAC
+WriteSpi1(hUsb, hex2dec('080'), hex2dec('00'));%pd
+WriteSpi1(hUsb, hex2dec('081'), hex2dec('72'));%inj
+WriteSpi1(hUsb, hex2dec('093'), hex2dec('00'));%inj_BW1
+WriteSpi1(hUsb, hex2dec('094'), hex2dec('00'));%inj_BW2
+WriteSpi1(hUsb, hex2dec('095'), hex2dec('0F'));%inj_gain
+WriteSpi1(hUsb, hex2dec('096'), hex2dec('00'));%inj_osc_band
+WriteSpi1(hUsb, hex2dec('097'), hex2dec('08'));%dds DAC dem
+WriteSpi1(hUsb, hex2dec('098'), hex2dec('00'));%DAC band
+WriteSpi1(hUsb, hex2dec('099'), hex2dec('3F'));%DAC cur_sel
+WriteSpi1(hUsb, hex2dec('09A'), hex2dec('20'));%DAC dnl_sel
+WriteSpi1(hUsb, hex2dec('0AC'), hex2dec('10'));%DDS DAC RES
+pause(0.1)
+%%
+WriteSpi1(hUsb, hex2dec('0C0'), hex2dec('10')); %   lopll pd ref来源
+WriteSpi1(hUsb, hex2dec('0C1'), hex2dec('80')); %
+WriteSpi1(hUsb, hex2dec('0C2'), hex2dec('70')); % pfd DZ
+WriteSpi1(hUsb, hex2dec('0C3'), hex2dec('2C')); % pfd
+WriteSpi1(hUsb, hex2dec('0C4'), hex2dec('F0')); % CP cur
+WriteSpi1(hUsb, hex2dec('0C5'), hex2dec('10')); % CP cur, offset CUR
+WriteSpi1(hUsb, hex2dec('0C6'), hex2dec('01')); % AFC ready manual
+WriteSpi1(hUsb, hex2dec('0C9'), hex2dec('26')); % AFC band manual
+WriteSpi1(hUsb, hex2dec('0DD'), hex2dec('33')); % AAC   11 low f 44 high f
+WriteSpi1(hUsb, hex2dec('0DE'), hex2dec('33')); % AAC   11 low f 44 high f
+WriteSpi1(hUsb, hex2dec('0C8'), hex2dec('F3')); % AFC
+WriteSpi1(hUsb, hex2dec('0CA'), hex2dec('CC')); % AAC=70  AAC-MANUAL=71
+WriteSpi1(hUsb, hex2dec('0DC'), hex2dec('10')); %选择使用4/5双模分频器  12=4/5  10=2/3
+WriteSpi1(hUsb, hex2dec('0DF'), hex2dec('32')); %选择VCO core，最低到最高为33~30
+WriteSpi1(hUsb, hex2dec('0CC'), hex2dec('A0')); % TCA EN
+WriteSpi1(hUsb, hex2dec('0CD'), hex2dec('10')); % TCA EN
+WriteSpi1(hUsb, hex2dec('0DA'), hex2dec('28')); %配置整数分频比
+WriteSpi1(hUsb, hex2dec('0CF'), hex2dec('00')); % sdm_frac_en
+WriteSpi1(hUsb, hex2dec('0D0'), hex2dec('00')); %配置小数分频比
+WriteSpi1(hUsb, hex2dec('0D1'), hex2dec('00')); %配置小数分频比
+WriteSpi1(hUsb, hex2dec('0D2'), hex2dec('00')); %配置小数分频比
+WriteSpi1(hUsb, hex2dec('0CE'), hex2dec('30')); % dither  30=CLOSE  32=OPEN
+WriteSpi1(hUsb, hex2dec('0D9'), hex2dec('00')); % dither
+WriteSpi1(hUsb, hex2dec('0C7'), hex2dec('00')); % AFC使能
+pause(0.5);
+WriteSpi1(hUsb, hex2dec('0C7'), hex2dec('17')); % AFC使能
+WriteSpi1(hUsb, hex2dec('000'), hex2dec('16'));
+pause(0.1);
+WriteSpi1(hUsb, hex2dec('000'), hex2dec('12'));
+dec2hex(ReadSpi1(hUsb, hex2dec('0E8')))  %AFC和锁定指示 正确03
+dec2hex(ReadSpi1(hUsb, hex2dec('0EA')))  %VCO子带
